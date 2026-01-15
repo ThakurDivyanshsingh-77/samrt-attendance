@@ -1,0 +1,39 @@
+.reports-card {
+  margin: 30px;
+  padding: 20px;
+}
+
+.filters {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-bottom: 20px;
+}
+
+mat-form-field {
+  width: 250px;
+}
+
+.loading {
+  text-align: center;
+  padding: 40px;
+}
+
+.empty {
+  text-align: center;
+  padding: 30px;
+  color: #777;
+}
+
+table {
+  width: 100%;
+}
+.summary-table {
+  width: 100%;
+  margin: 20px 0;
+}
+
+canvas {
+  max-width: 100%;
+  margin-top: 30px;
+}

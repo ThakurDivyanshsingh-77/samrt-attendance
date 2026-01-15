@@ -1,0 +1,32 @@
+<mat-card>
+  <h2>Attendance History</h2>
+
+  <table mat-table [dataSource]="records">
+
+    <ng-container matColumnDef="subject">
+      <th mat-header-cell *matHeaderCellDef>Subject</th>
+      <td mat-cell *matCellDef="let r">
+        {{ r.subject.name }}
+      </td>
+    </ng-container>
+
+    <ng-container matColumnDef="date">
+      <th mat-header-cell *matHeaderCellDef>Date</th>
+      <td mat-cell *matCellDef="let r">
+        {{ r.markedAt | date:'medium' }}
+      </td>
+    </ng-container>
+
+    <ng-container matColumnDef="status">
+      <th mat-header-cell *matHeaderCellDef>Status</th>
+      <td mat-cell *matCellDef="let r">Present</td>
+    </ng-container>
+
+    <tr mat-header-row *matHeaderRowDef="columns"></tr>
+    <tr mat-row *matRowDef="let row; columns: columns"></tr>
+  </table>
+
+  <p *ngIf="records.length === 0">
+    No attendance records found.
+  </p>
+</mat-card>

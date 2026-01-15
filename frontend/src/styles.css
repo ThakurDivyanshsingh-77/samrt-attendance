@@ -1,0 +1,9 @@
+/* Angular Material Overlay FIX */
+.cdk-overlay-container {
+  z-index: 10000 !important;
+  pointer-events: auto !important;
+}
+
+.cdk-overlay-pane {
+  pointer-events: auto !important;
+}

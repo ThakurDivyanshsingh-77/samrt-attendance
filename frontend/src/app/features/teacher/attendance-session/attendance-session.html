@@ -1,0 +1,76 @@
+<!-- LOADING STATE -->
+<div *ngIf="loading" class="loading-container">
+  <mat-spinner></mat-spinner>
+  <p>Starting attendance session...</p>
+</div>
+
+<!-- SESSION STARTED -->
+<div *ngIf="!loading && sessionCode" class="session-container">
+
+  <!-- SESSION CODE -->
+  <mat-card class="code-card">
+    <h1 class="session-code">
+      {{ sessionCode || '----' }}
+    </h1>
+    <p>Share this code with students</p>
+  </mat-card>
+
+  <!-- TIMER -->
+  <mat-card class="timer-card">
+    <mat-icon>schedule</mat-icon>
+    <span>{{ formatTime(timeRemaining) }}</span>
+  </mat-card>
+
+  <!-- STATS -->
+  <mat-card class="stats-card">
+    <h2>{{ attendanceList.length }}</h2>
+    <p>Students Present</p>
+  </mat-card>
+
+  <!-- LIVE ATTENDANCE -->
+  <mat-card>
+    <h3>Live Attendance</h3>
+
+    <table
+      mat-table
+      [dataSource]="attendanceList"
+      *ngIf="attendanceList.length > 0"
+      class="mat-elevation-z2"
+    >
+      <ng-container matColumnDef="rollNumber">
+        <th mat-header-cell *matHeaderCellDef>Roll No</th>
+        <td mat-cell *matCellDef="let r">{{ r.rollNumber }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="studentName">
+        <th mat-header-cell *matHeaderCellDef>Name</th>
+        <td mat-cell *matCellDef="let r">{{ r.studentName }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="markedAt">
+        <th mat-header-cell *matHeaderCellDef>Time</th>
+        <td mat-cell *matCellDef="let r">
+          {{ formatDateTime(r.markedAt) }}
+        </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+    </table>
+
+    <p *ngIf="attendanceList.length === 0">
+      Waiting for students to mark attendance…
+    </p>
+  </mat-card>
+
+  <!-- ACTIONS -->
+  <div class="actions">
+    <button mat-raised-button color="warn" (click)="endSession()">
+      End Session
+    </button>
+
+    <button mat-button (click)="goBack()">
+      Back
+    </button>
+  </div>
+</div>
