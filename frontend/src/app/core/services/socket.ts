@@ -1,100 +1,111 @@
+
 import { Injectable } from '@angular/core';
 import { io, Socket } from 'socket.io-client';
-import { Observable } from 'rxjs';
+import { Observable, Subject } from 'rxjs';
 import { environment } from '../../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class SocketService {
+  private socket: Socket | null = null;
+  private connectionStatus = new Subject<boolean>();
 
-  private socket!: Socket;
-  private connected = false;
-
-  // ===============================
-  // CONNECT
-  // ===============================
   connect(): void {
-    if (this.connected) return;
+    if (!this.socket || !this.socket.connected) {
+      console.log('Connecting to socket server:', environment.socketUrl);
+      
+      this.socket = io(environment.socketUrl, {
+        transports: ['websocket', 'polling'],
+        reconnection: true,
+        reconnectionDelay: 1000,
+        reconnectionAttempts: 5
+      });
+      
+      this.socket.on('connect', () => {
+        console.log('✅ Socket connected:', this.socket?.id);
+        this.connectionStatus.next(true);
+      });
 
-    this.socket = io(environment.socketUrl, {
-      transports: ['websocket'],
-      autoConnect: true
-    });
+      this.socket.on('disconnect', (reason) => {
+        console.log('⚠️ Socket disconnected:', reason);
+        this.connectionStatus.next(false);
+      });
 
-    this.socket.on('connect', () => {
-      this.connected = true;
-      console.log('✅ Socket connected:', this.socket.id);
-    });
+      this.socket.on('connect_error', (error) => {
+        console.error('❌ Socket connection error:', error);
+      });
 
-    this.socket.on('disconnect', () => {
-      this.connected = false;
-      console.log('❌ Socket disconnected');
-    });
-
-    this.socket.on('connect_error', (err) => {
-      console.error('❌ Socket connection error:', err);
-    });
+      this.socket.on('error', (error) => {
+        console.error('❌ Socket error:', error);
+      });
+    }
   }
 
-  // ===============================
-  // DISCONNECT
-  // ===============================
   disconnect(): void {
     if (this.socket) {
-      this.socket.removeAllListeners();
+      console.log('Disconnecting socket');
       this.socket.disconnect();
-      this.connected = false;
+      this.socket = null;
     }
   }
 
-  // ===============================
-  // JOIN / LEAVE SESSION
-  // ===============================
+  isConnected(): boolean {
+    return this.socket?.connected || false;
+  }
+
+  getConnectionStatus(): Observable<boolean> {
+    return this.connectionStatus.asObservable();
+  }
+
   joinSession(sessionId: string): void {
-    if (!this.connected || !sessionId) {
-      console.error('❌ joinSession failed: invalid sessionId', sessionId);
-      return;
+    if (this.socket?.connected) {
+      console.log('Joining session:', sessionId);
+      this.socket.emit('join-session', sessionId);
+    } else {
+      console.error('Socket not connected. Cannot join session.');
     }
-    this.socket.emit('join-session', sessionId);
-    console.log('➡️ Joined session:', sessionId);
   }
 
   leaveSession(sessionId: string): void {
-    if (!this.connected || !sessionId) return;
-    this.socket.emit('leave-session', sessionId);
-    console.log('⬅️ Left session:', sessionId);
+    if (this.socket?.connected) {
+      console.log('Leaving session:', sessionId);
+      this.socket.emit('leave-session', sessionId);
+    }
   }
 
-  // ===============================
-  // LISTENERS
-  // ===============================
   onAttendanceMarked(): Observable<any> {
     return new Observable(observer => {
-      if (!this.socket) return;
+      if (!this.socket) {
+        console.error('Socket not initialized');
+        return;
+      }
 
-      const handler = (data: any) => {
+      this.socket.on('attendance-marked', (data) => {
+        console.log('📢 Attendance marked event received:', data);
         observer.next(data);
-      };
-
-      this.socket.on('attendance-marked', handler);
+      });
 
       return () => {
-        this.socket.off('attendance-marked', handler);
+        this.socket?.off('attendance-marked');
       };
     });
   }
 
   onSessionExpired(): Observable<void> {
     return new Observable(observer => {
-      if (!this.socket) return;
+      if (!this.socket) {
+        console.error('Socket not initialized');
+        return;
+      }
 
-      const handler = () => observer.next();
-
-      this.socket.on('session-expired', handler);
+      this.socket.on('session-expired', () => {
+        console.log('📢 Session expired event received');
+        observer.next();
+      });
 
       return () => {
-        this.socket.off('session-expired', handler);
+        this.socket?.off('session-expired');
       };
     });
   }

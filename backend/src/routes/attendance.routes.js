@@ -1,93 +1,89 @@
+
 const express = require('express');
 const router = express.Router();
 const { body } = require('express-validator');
-
-const {
-  startSession,
-  getActiveSession,
-  endSession,
-  markAttendance,
-  getLiveAttendance,
-  getTeacherAttendanceHistory,
-  getSubjectStats,
-  getStudentAttendanceHistory,
-  getStudentStats
-} = require('../controllers/attendance.controller');
-
+const attendanceController = require('../controllers/attendance.controller');
 const { protect } = require('../middleware/auth.middleware');
 const { authorize } = require('../middleware/role.middleware');
 const { attendanceLimiter } = require('../middleware/rateLimiter.middleware');
 
-// ===== TEACHER =====
+// Teacher routes
 router.post(
   '/session/start',
   protect,
   authorize('teacher'),
   [
-    body('subjectId').notEmpty(),
-    body('year').isInt({ min: 1, max: 3 }),
-    body('semester').isInt({ min: 1, max: 6 })
+    body('subjectId').notEmpty().withMessage('Subject ID is required'),
+    body('year').isInt({ min: 1, max: 3 }).withMessage('Year must be 1, 2, or 3'),
+    body('semester').isInt({ min: 1, max: 6 }).withMessage('Semester must be between 1 and 6')
   ],
-  startSession
+  attendanceController.startSession
 );
 
 router.get(
   '/session/active/:subjectId',
   protect,
   authorize('teacher'),
-  getActiveSession
+  attendanceController.getActiveSession
 );
 
 router.post(
   '/session/end/:sessionId',
   protect,
   authorize('teacher'),
-  endSession
+  attendanceController.endSession
 );
 
 router.get(
   '/session/:sessionId/live',
   protect,
   authorize('teacher'),
-  getLiveAttendance
+  attendanceController.getLiveAttendance
 );
 
 router.get(
   '/history/teacher',
   protect,
   authorize('teacher'),
-  getTeacherAttendanceHistory
+  attendanceController.getTeacherAttendanceHistory
 );
 
 router.get(
   '/stats/subject/:subjectId',
   protect,
   authorize('teacher'),
-  getSubjectStats
+  attendanceController.getSubjectStats
 );
 
-// ===== STUDENT =====
+// Student routes
+router.get(
+  '/sessions/active',
+  protect,
+  authorize('student'),
+  attendanceController.getActiveSessionsForStudent
+);
+
 router.post(
   '/mark',
   protect,
   authorize('student'),
   attendanceLimiter,
-  [body('sessionCode').isLength({ min: 4, max: 4 })],
-  markAttendance
+  [body('sessionCode').isLength({ min: 4, max: 4 }).withMessage('Session code must be 4 digits')],
+  attendanceController.markAttendance
 );
 
 router.get(
   '/history/student',
   protect,
   authorize('student'),
-  getStudentAttendanceHistory
+  attendanceController.getStudentAttendanceHistory
 );
 
 router.get(
   '/stats/student',
   protect,
   authorize('student'),
-  getStudentStats
+  attendanceController.getStudentStats
 );
 
 module.exports = router;

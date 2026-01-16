@@ -40,4 +40,5 @@ const subjectSchema = new mongoose.Schema({
 subjectSchema.index({ year: 1, semester: 1 });
 subjectSchema.index({ code: 1 });
 
-module.exports = mongoose.model('Subject', subjectSchema);
+// ✅ FIX: Check if model exists before creating
+module.exports = mongoose.models.Subject || mongoose.model('Subject', subjectSchema);

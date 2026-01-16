@@ -1,8 +1,8 @@
-import { Injectable, Inject, PLATFORM_ID } from '@angular/core';
+
+import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable, tap } from 'rxjs';
 import { Router } from '@angular/router';
-import { isPlatformBrowser } from '@angular/common';
 import { environment } from '../../../environments/environment';
 
 export interface User {
@@ -26,102 +26,60 @@ export interface AuthResponse {
   providedIn: 'root'
 })
 export class AuthService {
-
   private currentUserSubject = new BehaviorSubject<User | null>(null);
   public currentUser$ = this.currentUserSubject.asObservable();
 
   constructor(
     private http: HttpClient,
-    private router: Router,
-    @Inject(PLATFORM_ID) private platformId: Object
+    private router: Router
   ) {
-    // ❌ constructor me direct localStorage nahi
-    // ✅ sirf browser me hi restore
-    if (this.isBrowser()) {
-      this.restoreUserFromStorage();
-    }
+    this.loadUserFromStorage();
   }
 
-  // =====================
-  // 🔐 SAFE helpers
-  // =====================
-  private isBrowser(): boolean {
-    return isPlatformBrowser(this.platformId);
-  }
-
-  private getStorage(key: string): string | null {
-    return this.isBrowser() ? localStorage.getItem(key) : null;
-  }
-
-  private setStorage(key: string, value: string): void {
-    if (this.isBrowser()) {
-      localStorage.setItem(key, value);
-    }
-  }
-
-  private removeStorage(key: string): void {
-    if (this.isBrowser()) {
-      localStorage.removeItem(key);
-    }
-  }
-
-  // =====================
-  // 👤 Session restore
-  // =====================
-  private restoreUserFromStorage(): void {
+  private loadUserFromStorage(): void {
     const token = this.getToken();
-    const user = this.getStorage('user');
-
+    const user = localStorage.getItem('user');
+    
     if (token && user) {
       this.currentUserSubject.next(JSON.parse(user));
     }
   }
 
-  // =====================
-  // 🔑 AUTH APIs
-  // =====================
   signup(data: any): Observable<AuthResponse> {
-    return this.http
-      .post<AuthResponse>(`${environment.apiUrl}/auth/signup`, data)
-      .pipe(
-        tap(res => {
-          if (res.success) {
-            this.saveSession(res.token, res.user);
-          }
-        })
-      );
+    return this.http.post<AuthResponse>(`${environment.apiUrl}/auth/signup`, data).pipe(
+      tap(response => {
+        if (response.success) {
+          this.setSession(response.token, response.user);
+        }
+      })
+    );
   }
 
   login(email: string, password: string): Observable<AuthResponse> {
-    return this.http
-      .post<AuthResponse>(`${environment.apiUrl}/auth/login`, { email, password })
-      .pipe(
-        tap(res => {
-          if (res.success) {
-            this.saveSession(res.token, res.user);
-          }
-        })
-      );
+    return this.http.post<AuthResponse>(`${environment.apiUrl}/auth/login`, { email, password }).pipe(
+      tap(response => {
+        if (response.success) {
+          this.setSession(response.token, response.user);
+        }
+      })
+    );
   }
 
-  private saveSession(token: string, user: User): void {
-    this.setStorage('token', token);
-    this.setStorage('user', JSON.stringify(user));
+  private setSession(token: string, user: User): void {
+    localStorage.setItem('token', token);
+    localStorage.setItem('user', JSON.stringify(user));
     this.currentUserSubject.next(user);
   }
 
   logout(): void {
-    this.removeStorage('token');
-    this.removeStorage('user');
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
     this.currentUserSubject.next(null);
     this.router.navigate(['/login']);
   }
 
-  // =====================
-  // 🛡️ Helpers for guards / interceptor
-  // =====================
   getToken(): string | null {
-    return this.getStorage('token');
+    return localStorage.getItem('token');
   }
 
   getCurrentUser(): User | null {

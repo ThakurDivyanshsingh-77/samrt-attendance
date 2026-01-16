@@ -39,4 +39,5 @@ attendanceRecordSchema.index({ student: 1, subject: 1 });
 attendanceRecordSchema.index({ subject: 1, markedAt: 1 });
 attendanceRecordSchema.index({ session: 1 });
 
-module.exports = mongoose.model('AttendanceRecord', attendanceRecordSchema);
+// ✅ FIX: Check if model exists before creating
+module.exports = mongoose.models.AttendanceRecord || mongoose.model('AttendanceRecord', attendanceRecordSchema);
