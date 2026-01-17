@@ -2,7 +2,8 @@
   "$schema": "./node_modules/@angular/cli/lib/config/schema.json",
   "version": 1,
   "cli": {
-    "packageManager": "npm"
+    "packageManager": "npm",
+    "analytics": "a736a31a-7436-472d-b3d6-dfedd149c18e"
   },
   "projects": {
     "frontend": {
@@ -17,6 +18,8 @@
             "browser": "src/main.ts",
             "tsConfig": "tsconfig.app.json",
 
+           
+
             "assets": [
               {
                 "glob": "**/*",
@@ -25,11 +28,9 @@
             ],
 
             "styles": [
-              "@angular/material/prebuilt-themes/indigo-pink.css",
-              "src/styles.css"
+              "src/styles.css",
+              "@angular/material/prebuilt-themes/indigo-pink.css"
             ]
-
-      
           },
           "configurations": {
             "production": {

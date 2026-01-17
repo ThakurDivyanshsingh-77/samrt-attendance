@@ -1,0 +1,87 @@
+.toolbar {
+  display: flex;
+  justify-content: space-between;
+}
+
+.title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 600;
+}
+
+.user {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.page {
+  max-width: 1200px;
+  margin: auto;
+  padding: 24px;
+}
+
+.hero-card {
+  background: linear-gradient(135deg, #5c6bc0, #7e57c2);
+  color: white;
+  margin-bottom: 24px;
+}
+
+.overall-card {
+  text-align: center;
+  margin-bottom: 24px;
+}
+
+.percentage {
+  font-size: 64px;
+  font-weight: bold;
+}
+
+.good { color: #4caf50; }
+.warning { color: #ff9800; }
+.danger { color: #f44336; }
+
+.actions {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 16px;
+  margin-bottom: 32px;
+}
+
+.subjects {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 16px;
+}
+
+.subject-card h3 {
+  margin-bottom: 4px;
+}
+
+.code {
+  color: #777;
+  font-size: 13px;
+}
+
+.bar {
+  height: 8px;
+  background: #e0e0e0;
+  border-radius: 4px;
+  overflow: hidden;
+  margin: 8px 0;
+}
+
+.fill {
+  height: 100%;
+  transition: width 0.3s;
+}
+
+.fill.good { background: #4caf50; }
+.fill.warning { background: #ff9800; }
+.fill.danger { background: #f44336; }
+
+.text {
+  text-align: center;
+  font-weight: 500;
+}

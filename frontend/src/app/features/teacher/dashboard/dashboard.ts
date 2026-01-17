@@ -1,8 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Router } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
-import { RouterModule } from '@angular/router';
 
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatIconModule } from '@angular/material/icon';
@@ -28,13 +27,13 @@ interface Subject {
   imports: [
     CommonModule,
     ReactiveFormsModule,
+    RouterModule,
     MatToolbarModule,
     MatIconModule,
     MatMenuModule,
     MatFormFieldModule,
     MatSelectModule,
-    MatButtonModule,
-    RouterModule  
+    MatButtonModule
   ],
   templateUrl: './dashboard.html',
   styleUrls: ['./dashboard.css']
@@ -43,6 +42,7 @@ export class TeacherDashboardComponent implements OnInit {
 
   userName = '';
 
+  // 🎓 FORM CONTROLS
   yearControl = new FormControl<number | null>(null);
   semesterControl = new FormControl<number | null>(null);
   subjectControl = new FormControl<string | null>(null);
@@ -56,11 +56,17 @@ export class TeacherDashboardComponent implements OnInit {
     private router: Router
   ) {}
 
+  // =============================
+  // INIT
+  // =============================
   ngOnInit(): void {
     const user = this.authService.getCurrentUser();
     this.userName = user?.name || '';
   }
 
+  // =============================
+  // YEAR CHANGE
+  // =============================
   onYearChange(): void {
     const year = this.yearControl.value;
 
@@ -74,9 +80,13 @@ export class TeacherDashboardComponent implements OnInit {
     if (year === 3) this.semesters = [5, 6];
   }
 
+  // =============================
+  // SEMESTER CHANGE → LOAD SUBJECTS
+  // =============================
   onSemesterChange(): void {
     const year = this.yearControl.value;
     const semester = this.semesterControl.value;
+
     if (!year || !semester) return;
 
     this.subjects = [];
@@ -85,10 +95,10 @@ export class TeacherDashboardComponent implements OnInit {
     this.api.get<any>('/subjects', {
       year,
       semester,
-      _ts: Date.now()
+      _ts: Date.now() // cache bypass
     }).subscribe({
       next: (res) => {
-        this.subjects = [...(res.subjects || [])];
+        this.subjects = res?.subjects ?? [];
       },
       error: () => {
         this.subjects = [];
@@ -96,18 +106,37 @@ export class TeacherDashboardComponent implements OnInit {
     });
   }
 
+  // =============================
+  // 🚀 START ATTENDANCE (FIXED)
+  // =============================
   startAttendance(): void {
-    if (!this.subjectControl.value) return;
+    const subjectId = this.subjectControl.value;
+    const year = this.yearControl.value;
+    const semester = this.semesterControl.value;
 
-    this.router.navigate(['/teacher/attendance-session'], {
-      queryParams: {
-        subjectId: this.subjectControl.value,
-        year: this.yearControl.value,
-        semester: this.semesterControl.value
+    // 🔒 HARD VALIDATION (IMPORTANT FIX)
+    if (!subjectId || !year || !semester) {
+      return;
+    }
+
+    // ✅ SAFE NAVIGATION (no double init)
+    const urlTree = this.router.createUrlTree(
+      ['/teacher/attendance-session'],
+      {
+        queryParams: {
+          subjectId,
+          year,
+          semester
+        }
       }
-    });
+    );
+
+    this.router.navigateByUrl(urlTree);
   }
 
+  // =============================
+  // LOGOUT
+  // =============================
   logout(): void {
     this.authService.logout();
   }

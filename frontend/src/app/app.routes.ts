@@ -5,13 +5,13 @@ import { roleGuard } from './core/guards/role-guard';
 export const routes: Routes = [
   { path: '', redirectTo: '/login', pathMatch: 'full' },
 
+  // ================= AUTH =================
   {
     path: 'login',
     loadComponent: () =>
       import('./features/auth/login/login')
         .then(m => m.LoginComponent)
   },
-
   {
     path: 'signup',
     loadComponent: () =>
@@ -19,7 +19,7 @@ export const routes: Routes = [
         .then(m => m.SignupComponent)
   },
 
-  // 🔥 TEACHER ROUTES
+  // ================= TEACHER =================
   {
     path: 'teacher',
     canActivate: [authGuard, roleGuard(['teacher'])],
@@ -50,7 +50,7 @@ export const routes: Routes = [
     ]
   },
 
-  // 🔥 STUDENT ROUTES
+  // ================= STUDENT =================
   {
     path: 'student',
     canActivate: [authGuard, roleGuard(['student'])],
@@ -66,9 +66,32 @@ export const routes: Routes = [
         loadComponent: () =>
           import('./features/student/mark-attendance/mark-attendance')
             .then(m => m.MarkAttendanceComponent)
+      },
+
+      // ✅ HISTORY
+      {
+        path: 'history',
+        loadComponent: () =>
+          import('./features/student/history/history')
+            .then(m => m.StudentHistoryComponent)
+      },
+
+      // ✅ REPORTS (🔥 THIS WAS MISSING)
+      {
+        path: 'reports',
+        loadComponent: () =>
+          import('./features/student/reports/reports')
+            .then(m => m.StudentReportsComponent)
+      },
+
+      {
+        path: '',
+        redirectTo: 'dashboard',
+        pathMatch: 'full'
       }
     ]
   },
 
+  // ================= FALLBACK =================
   { path: '**', redirectTo: '/login' }
 ];

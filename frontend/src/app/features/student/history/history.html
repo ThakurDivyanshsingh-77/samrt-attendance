@@ -1,32 +1,137 @@
-<mat-card>
-  <h2>Attendance History</h2>
+<!-- ================= PAGE WRAPPER ================= -->
+<div
+  class="min-h-screen px-6 py-10
+         bg-gradient-to-br from-indigo-900 via-purple-900 to-fuchsia-900">
 
-  <table mat-table [dataSource]="records">
+  <!-- ================= HEADER ================= -->
+  <div
+    class="max-w-6xl mx-auto mb-10
+           bg-white/10 backdrop-blur-2xl
+           border border-white/20
+           rounded-[2.5rem] p-8
+           shadow-[0_40px_120px_rgba(0,0,0,0.6)]">
 
-    <ng-container matColumnDef="subject">
-      <th mat-header-cell *matHeaderCellDef>Subject</th>
-      <td mat-cell *matCellDef="let r">
-        {{ r.subject.name }}
-      </td>
-    </ng-container>
+    <h1 class="text-3xl font-extrabold text-white">
+      Attendance History
+    </h1>
 
-    <ng-container matColumnDef="date">
-      <th mat-header-cell *matHeaderCellDef>Date</th>
-      <td mat-cell *matCellDef="let r">
-        {{ r.markedAt | date:'medium' }}
-      </td>
-    </ng-container>
+    <p class="mt-2 text-white/70">
+      View all your past attendance records
+    </p>
+  </div>
 
-    <ng-container matColumnDef="status">
-      <th mat-header-cell *matHeaderCellDef>Status</th>
-      <td mat-cell *matCellDef="let r">Present</td>
-    </ng-container>
+  <!-- ================= TABLE CARD ================= -->
+  <div
+    class="max-w-6xl mx-auto
+           bg-white/10 backdrop-blur-2xl
+           border border-white/20
+           rounded-[2.5rem] p-8
+           shadow-[0_40px_120px_rgba(0,0,0,0.6)]">
 
-    <tr mat-header-row *matHeaderRowDef="columns"></tr>
-    <tr mat-row *matRowDef="let row; columns: columns"></tr>
-  </table>
+    <!-- TABLE -->
+    <div class="overflow-x-auto" *ngIf="records.length > 0">
 
-  <p *ngIf="records.length === 0">
-    No attendance records found.
-  </p>
-</mat-card>
+      <table
+        mat-table
+        [dataSource]="records"
+        class="w-full text-white">
+
+        <!-- SUBJECT -->
+        <ng-container matColumnDef="subject">
+          <th
+            mat-header-cell
+            *matHeaderCellDef
+            class="text-white/80 font-semibold text-left py-4">
+            Subject
+          </th>
+
+          <td
+            mat-cell
+            *matCellDef="let r"
+            class="py-4 font-medium">
+            {{ r.subject.name }}
+          </td>
+        </ng-container>
+
+        <!-- DATE -->
+        <ng-container matColumnDef="date">
+          <th
+            mat-header-cell
+            *matHeaderCellDef
+            class="text-white/80 font-semibold text-left py-4">
+            Date & Time
+          </th>
+
+          <td
+            mat-cell
+            *matCellDef="let r"
+            class="py-4 text-white/90">
+            {{ r.markedAt | date:'medium' }}
+          </td>
+        </ng-container>
+
+        <!-- STATUS -->
+        <ng-container matColumnDef="status">
+          <th
+            mat-header-cell
+            *matHeaderCellDef
+            class="text-white/80 font-semibold text-left py-4">
+            Status
+          </th>
+
+          <td
+            mat-cell
+            *matCellDef="let r"
+            class="py-4">
+
+            <span
+              class="px-4 py-1 rounded-full text-sm font-semibold
+                     bg-emerald-500/20 text-emerald-300">
+              Present
+            </span>
+
+          </td>
+        </ng-container>
+
+        <tr
+          mat-header-row
+          *matHeaderRowDef="columns"
+          class="border-b border-white/20">
+        </tr>
+
+        <tr
+          mat-row
+          *matRowDef="let row; columns: columns"
+          class="hover:bg-white/5 transition">
+        </tr>
+
+      </table>
+    </div>
+
+    <!-- ================= EMPTY STATE ================= -->
+    <div
+      *ngIf="records.length === 0"
+      class="text-center py-20">
+
+      <div
+        class="w-20 h-20 mx-auto mb-6
+               rounded-full bg-white/10
+               flex items-center justify-center">
+
+        <mat-icon class="text-white/60 text-4xl">
+          history
+        </mat-icon>
+      </div>
+
+      <h3 class="text-xl font-semibold text-white">
+        No Attendance Found
+      </h3>
+
+      <p class="mt-2 text-white/70">
+        You haven’t marked attendance yet.
+      </p>
+    </div>
+
+  </div>
+
+</div>
