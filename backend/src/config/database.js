@@ -2,17 +2,12 @@ const mongoose = require('mongoose');
 
 const connectDB = async () => {
   try {
-    const mongoUri = process.env.MONGODB_URI;
-
-    if (!mongoUri) {
-      console.error("❌ MONGODB_URI is not defined in .env");
-      process.exit(1);
-    }
-
-    const conn = await mongoose.connect(mongoUri);
+    // FIX: Options object { useNewUrlParser, useUnifiedTopology } हटा दिया गया है
+    const conn = await mongoose.connect(process.env.MONGODB_URI || process.env.MONGODB_URI_ATLAS);
 
     console.log(`✅ MongoDB Connected: ${conn.connection.host}`);
 
+    // Handle connection events
     mongoose.connection.on('error', (err) => {
       console.error(`❌ MongoDB connection error: ${err}`);
     });
@@ -21,9 +16,10 @@ const connectDB = async () => {
       console.warn('⚠️ MongoDB disconnected');
     });
 
+    // Graceful shutdown
     process.on('SIGINT', async () => {
       await mongoose.connection.close();
-      console.log('🛑 MongoDB connection closed (SIGINT)');
+      console.log('MongoDB connection closed through app termination');
       process.exit(0);
     });
 
