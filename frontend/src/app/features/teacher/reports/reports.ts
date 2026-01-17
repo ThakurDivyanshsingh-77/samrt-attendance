@@ -11,8 +11,27 @@ import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { AttendanceService } from '../../../core/services/attendance.service';
 
 import { BaseChartDirective } from 'ng2-charts';
-
 import { ChartData, ChartType } from 'chart.js';
+
+/* 🔥 CHART.JS REGISTRATION (FIX FOR "bar is not registered") */
+import {
+  Chart,
+  BarController,
+  BarElement,
+  CategoryScale,
+  LinearScale,
+  Tooltip,
+  Legend
+} from 'chart.js';
+
+Chart.register(
+  BarController,
+  BarElement,
+  CategoryScale,
+  LinearScale,
+  Tooltip,
+  Legend
+);
 
 @Component({
   selector: 'app-teacher-reports',
@@ -49,7 +68,7 @@ export class TeacherReportsComponent implements OnInit {
   // 📊 MONTHLY SUMMARY
   monthlySummary: { month: string; sessions: number; present: number }[] = [];
 
-  // 📈 CHART
+  // 📈 BAR CHART
   chartType: ChartType = 'bar';
   chartData: ChartData<'bar'> = {
     labels: [],
@@ -81,9 +100,11 @@ export class TeacherReportsComponent implements OnInit {
   }
 
   extractSubjects(): void {
-    const map = new Map();
+    const map = new Map<string, any>();
     this.sessions.forEach(s => {
-      if (s.subject?._id) map.set(s.subject._id, s.subject);
+      if (s.subject?._id) {
+        map.set(s.subject._id, s.subject);
+      }
     });
     this.subjects = Array.from(map.values());
   }
@@ -99,8 +120,7 @@ export class TeacherReportsComponent implements OnInit {
       const matchSubject = !subjectId || s.subject?._id === subjectId;
       const matchFrom = !fromDate || d >= fromDate;
       const matchTo =
-        !toDate ||
-        d <= new Date(toDate.setHours(23, 59, 59, 999));
+        !toDate || d <= new Date(toDate.setHours(23, 59, 59, 999));
 
       return matchSubject && matchFrom && matchTo;
     });
@@ -130,7 +150,7 @@ export class TeacherReportsComponent implements OnInit {
     }));
   }
 
-  // 📈 GRAPH
+  // 📈 BAR CHART DATA
   generateAttendanceChart(): void {
     const map = new Map<string, number>();
 

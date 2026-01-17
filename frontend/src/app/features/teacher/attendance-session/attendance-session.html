@@ -1,18 +1,26 @@
-<!-- LOADING STATE -->
+<!-- LOADING -->
 <div *ngIf="loading" class="loading-container">
   <mat-spinner></mat-spinner>
-  <p>Starting attendance session...</p>
+  <p>Starting attendance session…</p>
 </div>
 
-<!-- SESSION STARTED -->
-<div *ngIf="!loading && sessionCode" class="session-container">
+<!-- ERROR -->
+<div *ngIf="!loading && error" class="error-container">
+  <mat-icon color="warn">error</mat-icon>
+  <p>{{ error }}</p>
+  <button mat-raised-button color="primary" (click)="goBack()">Back</button>
+</div>
+
+<!-- SESSION UI -->
+<div *ngIf="!loading && session" class="session-container">
 
   <!-- SESSION CODE -->
   <mat-card class="code-card">
-    <h1 class="session-code">
-      {{ sessionCode || '----' }}
-    </h1>
+    <h1 class="session-code">{{ session.sessionCode }}</h1>
     <p>Share this code with students</p>
+    <p *ngIf="session.subject">
+      {{ session.subject.name }} ({{ session.subject.code }})
+    </p>
   </mat-card>
 
   <!-- TIMER -->
@@ -27,15 +35,14 @@
     <p>Students Present</p>
   </mat-card>
 
-  <!-- LIVE ATTENDANCE -->
+  <!-- LIVE TABLE -->
   <mat-card>
     <h3>Live Attendance</h3>
 
     <table
       mat-table
       [dataSource]="attendanceList"
-      *ngIf="attendanceList.length > 0"
-      class="mat-elevation-z2"
+      *ngIf="attendanceList.length"
     >
       <ng-container matColumnDef="rollNumber">
         <th mat-header-cell *matHeaderCellDef>Roll No</th>
@@ -59,7 +66,7 @@
     </table>
 
     <p *ngIf="attendanceList.length === 0">
-      Waiting for students to mark attendance…
+      Waiting for students…
     </p>
   </mat-card>
 
@@ -68,9 +75,6 @@
     <button mat-raised-button color="warn" (click)="endSession()">
       End Session
     </button>
-
-    <button mat-button (click)="goBack()">
-      Back
-    </button>
+    <button mat-button (click)="goBack()">Back</button>
   </div>
 </div>

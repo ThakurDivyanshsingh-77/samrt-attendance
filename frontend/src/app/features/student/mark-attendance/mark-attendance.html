@@ -1,1 +1,121 @@
-<p>mark-attendance works!</p>
+<!-- FULL SCREEN BACKDROP -->
+<div
+  class="min-h-screen flex items-center justify-center
+         bg-gradient-to-br from-indigo-900 via-purple-900 to-fuchsia-900
+         px-6">
+
+  <!-- GLASS CARD -->
+  <div
+    class="relative w-full max-w-xl
+           bg-white/10 backdrop-blur-2xl
+           border border-white/20
+           rounded-[2.5rem] shadow-[0_30px_80px_rgba(0,0,0,0.6)]
+           p-10 text-white">
+
+    <!-- BACK BUTTON -->
+    <button
+      (click)="goBack()"
+      class="absolute left-6 top-6 flex items-center gap-2
+             text-white/80 hover:text-white transition">
+      <mat-icon>arrow_back</mat-icon>
+      Back
+    </button>
+
+    <!-- TITLE -->
+    <div class="text-center mb-10 mt-4">
+      <h1 class="text-4xl font-extrabold tracking-wide">
+        Mark Attendance
+      </h1>
+      <p class="text-white/70 mt-2">
+        Enter the session code shared by your teacher
+      </p>
+    </div>
+
+    <!-- ACTIVE SESSIONS -->
+    <div *ngIf="activeSessions.length > 0" class="mb-10">
+
+      <h3 class="text-lg font-semibold mb-4 text-white/90">
+        Live Sessions
+      </h3>
+
+      <div class="space-y-4">
+        <div
+          *ngFor="let session of activeSessions"
+          class="flex items-center justify-between
+                 bg-white/10 border border-white/20
+                 rounded-2xl px-5 py-4
+                 hover:bg-white/20 transition">
+
+          <div>
+            <p class="font-semibold text-lg">
+              {{ session.subject.name }}
+            </p>
+            <p class="text-sm text-white/70">
+              {{ session.teacher.name }} •
+              {{ getTimeRemaining(session.expiryTime) }}
+            </p>
+          </div>
+
+          <mat-icon class="text-white/80">schedule</mat-icon>
+        </div>
+      </div>
+    </div>
+
+    <!-- NO SESSION -->
+    <div
+      *ngIf="activeSessions.length === 0 && !loading"
+      class="text-center mb-10 text-white/70">
+
+      <mat-icon class="text-6xl mb-3">info</mat-icon>
+      <p>No active session available</p>
+
+      <button
+        class="mt-3 text-indigo-300 hover:text-indigo-200 font-medium"
+        (click)="refreshSessions()">
+        Refresh
+      </button>
+    </div>
+
+    <!-- CODE INPUT -->
+    <div class="text-center">
+
+      <h3 class="text-xl font-semibold mb-6">
+        Session Code
+      </h3>
+
+      <!-- BIG CODE INPUT -->
+      <input
+        type="text"
+        maxlength="4"
+        placeholder="• • • •"
+        [formControl]="codeControl"
+        (keyup.enter)="submitCode()"
+        class="w-56 mx-auto text-center text-4xl tracking-[1rem]
+               bg-transparent border-b-4 border-white/40
+               focus:border-indigo-400 focus:outline-none
+               pb-3 transition" />
+
+      <!-- ERROR -->
+      <p *ngIf="codeControl.invalid && codeControl.touched"
+         class="text-rose-400 text-sm mt-3">
+        Enter a valid 4-digit code
+      </p>
+
+      <!-- SUBMIT -->
+      <button
+        (click)="submitCode()"
+        [disabled]="codeControl.invalid || submitting"
+        class="mt-10 w-full h-14 rounded-2xl
+               bg-gradient-to-r from-indigo-500 via-purple-500 to-fuchsia-500
+               font-bold text-lg shadow-2xl
+               hover:scale-105 transition
+               flex items-center justify-center gap-3">
+
+        <span *ngIf="!submitting">Mark Present</span>
+        <mat-spinner *ngIf="submitting" diameter="26"></mat-spinner>
+      </button>
+
+    </div>
+
+  </div>
+</div>

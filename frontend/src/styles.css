@@ -1,3 +1,6 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 /* Angular Material Overlay FIX */
 .cdk-overlay-container {
   z-index: 10000 !important;

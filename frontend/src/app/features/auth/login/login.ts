@@ -2,13 +2,7 @@ import { Component, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
-
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
-import { MatButtonModule } from '@angular/material/button';
-import { MatCardModule } from '@angular/material/card';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 import { AuthService, AuthResponse } from '../../../core/services/auth';
 
@@ -19,87 +13,140 @@ import { AuthService, AuthResponse } from '../../../core/services/auth';
     CommonModule,
     ReactiveFormsModule,
     RouterLink,
-    MatFormFieldModule,
-    MatInputModule,
-    MatButtonModule,
-    MatCardModule,
-    MatSnackBarModule,
-    MatProgressSpinnerModule
+    MatSnackBarModule
   ],
   template: `
-    <div class="login-container">
-      <mat-card class="login-card">
-        <mat-card-header>
-          <mat-card-title>College Attendance System</mat-card-title>
-          <mat-card-subtitle>Login to your account</mat-card-subtitle>
-        </mat-card-header>
+  <div class="min-h-screen grid grid-cols-1 lg:grid-cols-2">
 
-        <mat-card-content>
-          <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+  <!-- LEFT BRAND (DESKTOP ONLY) -->
+  <div
+    class="hidden lg:flex flex-col justify-center px-16
+           bg-gradient-to-br from-indigo-700 via-purple-700 to-fuchsia-700
+           relative overflow-hidden">
 
-            <mat-form-field appearance="outline" class="full-width">
-              <mat-label>Email</mat-label>
-              <input matInput type="email" formControlName="email">
-              <mat-error *ngIf="loginForm.get('email')?.hasError('required')">
-                Email is required
-              </mat-error>
-              <mat-error *ngIf="loginForm.get('email')?.hasError('email')">
-                Invalid email
-              </mat-error>
-            </mat-form-field>
+    <div class="absolute -top-32 -left-32 w-96 h-96 bg-white/10 rounded-full blur-3xl"></div>
+    <div class="absolute bottom-0 right-0 w-96 h-96 bg-white/10 rounded-full blur-3xl"></div>
 
-            <mat-form-field appearance="outline" class="full-width">
-              <mat-label>Password</mat-label>
-              <input matInput type="password" formControlName="password">
-              <mat-error *ngIf="loginForm.get('password')?.hasError('required')">
-                Password is required
-              </mat-error>
-            </mat-form-field>
+    <h1 class="text-5xl font-extrabold text-white leading-tight">
+      Smart <br /> Attendance <br /> System
+    </h1>
 
-            <button
-              mat-raised-button
-              color="primary"
-              class="full-width"
-              type="submit"
-              [disabled]="loginForm.invalid || loading">
+    <p class="mt-6 text-lg text-white/80 max-w-md">
+      A modern role-based attendance platform designed for colleges,
+      teachers, and students with real-time tracking.
+    </p>
 
-              <span *ngIf="!loading">Login</span>
-              <mat-spinner *ngIf="loading" diameter="20"></mat-spinner>
-
-            </button>
-          </form>
-
-          <div class="signup-link">
-            <p>
-              Don't have an account?
-              <a routerLink="/signup">Sign up as Student</a>
-            </p>
-          </div>
-        </mat-card-content>
-      </mat-card>
+    <div class="mt-10 text-sm text-white/60">
+      © 2026 College ERP Platform
     </div>
+  </div>
+
+  <!-- RIGHT LOGIN (MOBILE FIRST) -->
+  <div
+    class="flex flex-col justify-end lg:justify-center
+           min-h-screen bg-gradient-to-br
+           from-indigo-700 via-purple-700 to-fuchsia-700
+           lg:bg-gray-50 px-4 sm:px-6">
+
+    <!-- MOBILE BRANDING -->
+    <div class="lg:hidden text-center text-white mb-10 mt-10">
+      <h1 class="text-4xl font-extrabold leading-tight">
+        Smart Attendance
+      </h1>
+      <p class="mt-2 text-sm text-white/80">
+        Login to continue
+      </p>
+    </div>
+
+    <!-- LOGIN CARD -->
+    <div
+      class="w-full max-w-md mx-auto
+             bg-white rounded-t-3xl lg:rounded-2xl
+             shadow-[0_20px_60px_rgba(0,0,0,0.2)]
+             p-8 md:p-10">
+
+      <!-- HEADER -->
+      <div class="text-center mb-8">
+        <h2 class="text-3xl font-bold text-gray-900">
+          Welcome Back
+        </h2>
+        <p class="text-sm text-gray-500 mt-2">
+          Login to continue to your dashboard
+        </p>
+      </div>
+
+      <!-- FORM -->
+      <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="space-y-6">
+
+        <!-- EMAIL -->
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">
+            Email Address
+          </label>
+          <input
+            type="email"
+            formControlName="email"
+            placeholder="you@example.com"
+            class="w-full rounded-xl px-4 py-3
+                   border border-gray-300
+                   focus:border-indigo-600 focus:ring-2 focus:ring-indigo-200
+                   outline-none transition" />
+        </div>
+
+        <!-- PASSWORD -->
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">
+            Password
+          </label>
+          <input
+            type="password"
+            formControlName="password"
+            placeholder="••••••••"
+            class="w-full rounded-xl px-4 py-3
+                   border border-gray-300
+                   focus:border-indigo-600 focus:ring-2 focus:ring-indigo-200
+                   outline-none transition" />
+        </div>
+
+        <!-- BUTTON -->
+        <button
+          type="submit"
+          [disabled]="loginForm.invalid || loading"
+          class="w-full py-3 rounded-xl font-semibold text-white
+                 bg-gradient-to-r from-indigo-600 to-purple-600
+                 hover:from-indigo-700 hover:to-purple-700
+                 shadow-lg hover:shadow-xl
+                 transition-all duration-200
+                 flex items-center justify-center gap-2
+                 disabled:opacity-60 disabled:cursor-not-allowed">
+
+          <span *ngIf="!loading">Login</span>
+
+          <svg *ngIf="loading"
+               class="animate-spin h-5 w-5 text-white"
+               xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+            <circle class="opacity-25" cx="12" cy="12" r="10"
+                    stroke="currentColor" stroke-width="4"></circle>
+            <path class="opacity-75" fill="currentColor"
+                  d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path>
+          </svg>
+        </button>
+      </form>
+
+      <!-- FOOTER -->
+      <div class="text-center mt-6 text-sm text-gray-600">
+        Don’t have an account?
+        <a routerLink="/signup"
+           class="font-semibold text-indigo-600 hover:underline">
+          Sign up as Student
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+
   `,
-  styles: [`
-    .login-container {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      min-height: 100vh;
-      background: linear-gradient(135deg, #667eea, #764ba2);
-    }
-    .login-card {
-      width: 100%;
-      max-width: 420px;
-    }
-    .full-width {
-      width: 100%;
-      margin-bottom: 16px;
-    }
-    .signup-link {
-      text-align: center;
-      margin-top: 16px;
-    }
-  `]
+  styles: []
 })
 export class LoginComponent {
 
@@ -111,7 +158,7 @@ export class LoginComponent {
     private authService: AuthService,
     private router: Router,
     private snackBar: MatSnackBar,
-    private cdr: ChangeDetectorRef   // 🔥 IMPORTANT
+    private cdr: ChangeDetectorRef
   ) {
     this.loginForm = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
@@ -123,18 +170,17 @@ export class LoginComponent {
     if (this.loginForm.invalid || this.loading) return;
 
     this.loading = true;
-    this.cdr.detectChanges(); // 🔥 FIX NG0100
+    this.cdr.detectChanges();
 
     const { email, password } = this.loginForm.value;
 
     this.authService.login(email, password).subscribe({
       next: (res: AuthResponse) => {
         this.loading = false;
-        this.cdr.detectChanges(); // 🔥 FIX NG0100
+        this.cdr.detectChanges();
 
         this.snackBar.open('Login successful', 'Close', { duration: 3000 });
 
-        // ✅ ROLE BASED ROUTING
         if (res.user.role === 'teacher') {
           this.router.navigate(['/teacher/dashboard']);
         } else {
@@ -143,7 +189,7 @@ export class LoginComponent {
       },
       error: (err) => {
         this.loading = false;
-        this.cdr.detectChanges(); // 🔥 FIX NG0100
+        this.cdr.detectChanges();
 
         const msg =
           err?.error?.message ||
